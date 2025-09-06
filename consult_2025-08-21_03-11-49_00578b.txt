@@ -1,0 +1,12 @@
+Docteur Virtuel Pro — Consultation Summary
+Time: 2025-08-21_03-11-49
+Language: ar
+Profile: age=18, sex=ذكر, pregnant=False, chronic=False
+Input: الم في البطن و دوخة
+Triage: 🟢 روتيني (Routine) — راقب الأعراض واتبّع النصائح
+Severity: {'duration': None, 'severity': None, 'pain': None, 'fever': None}
+Red Flags: None
+
+Top results:
+- ارتفاع ضغط الدم (عرضي) (score=1, hits=دوخة)
+  Advice: قِس الضغط بهدوء بعد 5 دقائق جلوس. إذا أرقام شديدة الارتفاع مع ألم صدر/ضيق نفس/عجز عصبي → طوارئ.
