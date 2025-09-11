@@ -9,20 +9,21 @@ def normalize(t: str) -> str:
     if not t:
         return ""
     t = t.lower()
-    # حذف التشكيل والمدود بالعربية
+    # simplifier les mots arabes
     t = re.sub(r'[\u0617-\u061A\u064B-\u0652\u0670\u06D6-\u06ED\u0640]', '', t)
-    # تبسيط بعض الحروف الفرنسية ذات اللكنة
+    # simplifier les mots français
     repl = str.maketrans("éèêàâîïôûùç", "eeeaaio uuc")
     t = t.translate(repl)
-    # احتفظ بالحروف العربية/اللاتينية والأرقام والمسافات
+    # éléminer les symboles
     t = re.sub(r'[^a-z\u0600-\u06FF0-9\s]', ' ', t)
+    # éviter les espaces
     t = re.sub(r'\s+', ' ', t).strip()
     return t
 
 @st.cache_data
 def load_kb():
     data = json.loads(KB_PATH.read_text(encoding="utf-8"))
-    # طبّق normalize مسبقًا على العبارات باش نسرّع
+    # faire normalize
     for c in data["conditions"]:
         c["core_norm"]  = [normalize(p) for p in c.get("core", [])]
         c["other_norm"] = [normalize(p) for p in c.get("other", [])]
@@ -55,6 +56,7 @@ def score_condition(user_txt, cond):
             hits.append(p)
     return score, hits
 
+#créer une interface de site web
 def main():
     st.set_page_config(page_title="Docteur Virtuel (Triage)", page_icon="🩺")
     st.title("🩺 Docteur Virtuel — Triage تعليمي")
@@ -71,13 +73,13 @@ def main():
             st.warning("كتب شي أعراض باش نقدر نحلّل.")
             return
 
-        # تحذير أعلام حمراء
+        # red flags
         red, phrase = any_red_flags(user_txt, kb)
         if red:
             st.error("🔴 كاين عرض خطير! من الأفضل تتواصل مع الإسعاف/طبيب حالًا.")
             st.write(f"عبارة مطابقة تم رصدها: **{phrase}**")
 
-        # حساب النقاط
+        # calculer le score pour vérifier les symptomes
         scored = []
         for c in kb["conditions"]:
             s, hits = score_condition(user_txt, c)
@@ -88,7 +90,7 @@ def main():
             st.info("ما لقيتش تطابق واضح. حاول توضّح الأعراض (المدة، الشدة، واش كاين حمى...).")
             return
 
-        # ترتيب وإظهار النتائج
+        # Trier et afficher les résultats
         scored.sort(key=lambda x: x["score"], reverse=True)
         total = sum(x["score"] for x in scored) or 1
         st.subheader("👩‍⚕️ أقرب الاحتمالات (تقدير أولي)")
@@ -105,3 +107,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
